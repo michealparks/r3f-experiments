@@ -1,21 +1,35 @@
-import React from 'react'
-import { Canvas } from '@react-three/fiber'
-import Box from './Box'
-import logo from './logo.svg'
-import './App.css'
+import React, { Suspense, useEffect } from 'react'
+import { Canvas, addEffect, addAfterEffect } from '@react-three/fiber'
+import Stats from '@drecom/stats.js'
+import { Box } from './Box'
+import { Postprocessing } from './Postprocessing'
 
-export default () => {
+
+const App = () => {
+  if (import.meta.env.MODE === 'development') {
+    useEffect(() => {
+      const stats = new Stats({ maxFPS: Infinity, maxMem: Infinity })
+      document.body.appendChild(stats.dom)
+      addEffect(() => stats.begin())
+      addAfterEffect(() => stats.end())
+    }, [])
+  }
+
   return (
-    <>
-      <Canvas id="canvas" dpr={Math.min(devicePixelRatio, 2)}>
+    <Suspense fallback={null}>
+      <Canvas mode='concurrent'
+        gl={{ antialias: false }}
+        dpr={Math.min(2, devicePixelRatio)}
+        camera={{ position: [0, 0, 20], near: 0.01, far: 1000 }}
+      >
+        <Postprocessing />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
         <Box position={[-1.2, 0, 0]} />
         <Box position={[1.2, 0, 0]} />
       </Canvas>
-      <div className="App">
-        {/* ui goes here */}
-      </div>
-    </>
+    </Suspense>
   )
 }
+
+export default App

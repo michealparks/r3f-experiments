@@ -63,21 +63,21 @@ export const Box = (props: JSX.IntrinsicElements['mesh']) => {
 	const [state, send] = useMachine(boxMachine)
 	const springs = useSpring(state.context)
 
-  useFrame((_, delta) => {
+	useFrame((_, delta) => {
 		ref.current.rotation.x += delta
 		ref.current.rotation.y += delta
 	})
 
-  return (
-    <animated.mesh
-      {...props}
-      ref={ref}
+	return (
+		<animated.mesh
+			{...props}
+			ref={ref}
 			scale={springs.scale}
-      onClick={() => send('TOGGLE')}
-      onPointerOver={() => send('HOVER_ENTER')}
-      onPointerOut={() => send('HOVER_LEAVE')}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={state.context.color} />
-    </animated.mesh>
-  )
+			onClick={() => send('TOGGLE')}
+			onPointerOver={() => send('HOVER_ENTER')}
+			onPointerOut={() => send('HOVER_LEAVE')}>
+			<boxGeometry args={[1, 1, 1]} />
+			<meshStandardMaterial color={state.context.color} />
+		</animated.mesh>
+	)
 }

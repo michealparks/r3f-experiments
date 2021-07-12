@@ -14,9 +14,9 @@ export const Postprocessing = () => {
     <EffectComposer multisampling={0}>
       <SMAA />
       <DepthOfField
-        focusDistance={0}
-        focalLength={0.1}
-        bokehScale={0.3}
+        focusDistance={0.01}
+        focalLength={0.3}
+        bokehScale={3}
         height={480}
       />
       <Bloom

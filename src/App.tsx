@@ -10,9 +10,19 @@ const App = () => {
     useEffect(() => {
       const stats = new Stats({ maxFPS: Infinity, maxMem: Infinity })
       document.body.appendChild(stats.dom)
-      addEffect(() => stats.begin())
-      addAfterEffect(() => stats.end())
+
+      addEffect(() => { stats.begin() })
+      addAfterEffect(() => { stats.end() })
     }, [])
+  }
+
+  const boxes = []
+  const distance = 35
+  for (let i = 0; i < 200; i += 1) {
+    const x = (Math.random() - 0.5) * distance
+    const y = (Math.random() - 0.5) * distance
+    const z = (Math.random() - 0.5) * distance
+    boxes.push(<Box position={[x, y, z]} />)
   }
 
   return (
@@ -25,8 +35,7 @@ const App = () => {
         <Postprocessing />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-        <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
+        {boxes}
       </Canvas>
     </Suspense>
   )

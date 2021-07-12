@@ -1,9 +1,11 @@
 import * as THREE from 'three'
 import React from 'react'
 import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { context, useFrame } from '@react-three/fiber'
 import { useMachine } from '@xstate/react'
 import { createMachine, assign } from 'xstate'
+import { useSpring, animated, config } from '@react-spring/three'
+
 
 const boxMachine = createMachine({
 	id: 'box',
@@ -59,22 +61,23 @@ const boxMachine = createMachine({
 export const Box = (props: JSX.IntrinsicElements['mesh']) => {
 	const ref = useRef<THREE.Mesh>(null!)
 	const [state, send] = useMachine(boxMachine)
+	const springs = useSpring(state.context)
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
 		ref.current.rotation.x += delta
 		ref.current.rotation.y += delta
 	})
 
   return (
-    <mesh
+    <animated.mesh
       {...props}
       ref={ref}
-      scale={state.context.scale}
+			scale={springs.scale}
       onClick={() => send('TOGGLE')}
       onPointerOver={() => send('HOVER_ENTER')}
       onPointerOut={() => send('HOVER_LEAVE')}>
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={state.context.color} />
-    </mesh>
+    </animated.mesh>
   )
 }

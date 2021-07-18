@@ -1,66 +1,16 @@
 import * as THREE from 'three'
 import React from 'react'
-import { useRef } from 'react'
-import { context, useFrame } from '@react-three/fiber'
-import { useMachine } from '@xstate/react'
-import { createMachine, assign } from 'xstate'
+import { useRef, useMemo } from 'react'
+import { useFrame } from '@react-three/fiber'
 import { useSpring, animated, config } from '@react-spring/three'
+import BoxMachine from './machines/box?worker'
+import { useAsyncMachine } from './hooks/useAsyncMachine'
+import * as Comlink from 'comlink'
 
-
-const boxMachine = createMachine({
-	id: 'box',
-	context: {
-		scale: 1,
-		color: 'orange'
-	},
-	initial: 'smallYellow',
-	states: {
-		smallPink: {
-			on: {
-				TOGGLE: {
-					target: 'largePink',
-					actions: assign({ scale: 1.5 })
-				},
-				HOVER_LEAVE: {
-					target: 'smallYellow',
-					actions: assign({ color: 'orange' })
-				}
-			}
-		},
-		largePink: {
-			on: {
-				TOGGLE: {
-					target: 'smallPink',
-					actions: assign({ scale: 1 })
-				},
-				HOVER_LEAVE: {
-					target: 'largeYellow',
-					actions: assign({ color: 'orange' })
-				}
-			}
-		},
-		smallYellow: {
-			on: {
-				HOVER_ENTER: {
-					target: 'smallPink',
-					actions: assign({ color: 'hotpink' })
-				}
-			}
-		},
-		largeYellow: {
-			on: {
-				HOVER_ENTER: {
-					target: 'largePink',
-					actions: assign({ color: 'hotpink' })
-				}
-			}
-		}
-	}
-})
-
+let count = 0
 export const Box = (props: JSX.IntrinsicElements['mesh']) => {
 	const ref = useRef<THREE.Mesh>(null!)
-	const [state, send] = useMachine(boxMachine)
+	const [state, send] = useAsyncMachine(BoxMachine)
 	const springs = useSpring(state.context)
 
 	useFrame((_, delta) => {

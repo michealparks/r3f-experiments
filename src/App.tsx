@@ -3,7 +3,7 @@ import { Canvas, addEffect, addAfterEffect } from '@react-three/fiber'
 import Stats from '@drecom/stats.js'
 import { Box } from './Box'
 import { Postprocessing } from './Postprocessing'
-
+import { nanoid } from 'nanoid'
 
 const App = () => {
   if (import.meta.env.MODE === 'development') {
@@ -17,12 +17,12 @@ const App = () => {
   }
 
   const boxes = []
-  const distance = 35
-  for (let i = 0; i < 200; i += 1) {
+  const distance = 10
+  for (let i = 0; i < 5; i += 1) {
     const x = (Math.random() - 0.5) * distance
     const y = (Math.random() - 0.5) * distance
     const z = (Math.random() - 0.5) * distance
-    boxes.push(<Box position={[x, y, z]} />)
+    boxes.push(<Box key={nanoid()} position={[x, y, z]} />)
   }
 
   return (

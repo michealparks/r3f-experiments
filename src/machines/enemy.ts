@@ -1,15 +1,37 @@
 import { createMachine, assign } from 'xstate'
 
-export const enemyMachine = createMachine({
+interface Context {
+  interval: number
+  wanderDirection: {
+    x: number 
+    y: number
+  }
+}
+
+type Events =
+  | { type: 'START', interval: number }
+  | { type: 'TICK' }
+  | { type: 'PLAYER_SEEN' }
+  | { type: 'PLAYER_NOT_SEEN' }
+  | { type: 'PLAYER_IN_REACH' }
+  | { type: 'PLAYER_OUT_OF_REACH' }
+  | { type: 'PLAYER_DIED' }
+
+export const enemyMachine = createMachine<Context, Events>({
   id: 'enemy',
   initial: 'inactive',
   context: {
-    interval: 3.0,
+    interval: 5.0,
     wanderDirection: { x: 0, y: 0 }
   },
   states: {
     inactive: {
-      on: { START: 'wander' }
+      on: {
+        START: {
+          target: 'wander',
+          actions: 'setGameConfig'
+        }
+      }
     },
     wander: {
       invoke: {
@@ -45,6 +67,13 @@ export const enemyMachine = createMachine({
     }
   },
   actions: {
+    setGameConfig: assign((_ctx, event) => {
+      if (event.type !== 'START') return {}
+
+      return {
+        interval: event.interval
+      }
+    }),
     setWanderDirection: assign((_ctx, _event) => {
       return {
         wanderDirection: {
